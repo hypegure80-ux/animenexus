@@ -5,7 +5,8 @@ import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import { cookies } from "next/headers";
 
-const SESSION_COOKIE = "sakura_session";
+// Get session cookie name from environment variable with fallback
+const SESSION_COOKIE = process.env.SESSION_COOKIE_NAME ?? "sakura_session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
 export async function hashPassword(password: string): Promise<string> {
@@ -46,52 +47,58 @@ export async function setSessionCookie(token: string, expiresAt: Date) {
 }
 
 export async function getSession() {
-  const store = await cookies();
-  const token = store.get(SESSION_COOKIE)?.value;
-  if (!token) return null;
+  try {
+    const store = await cookies();
+    const token = store.get(SESSION_COOKIE)?.value;
+    if (!token) return null;
 
-  const [session] = await db
-    .select({
-      id: sessions.id,
-      userId: sessions.userId,
-      expiresAt: sessions.expiresAt,
-      user: {
-        id: users.id,
-        email: users.email,
-        username: users.username,
-        displayName: users.displayName,
-        avatarUrl: users.avatarUrl,
-        bio: users.bio,
-        role: users.role,
-        reputation: users.reputation,
-        createdAt: users.createdAt,
-      },
-    })
-    .from(sessions)
-    .innerJoin(users, eq(sessions.userId, users.id))
-    .where(
-      and(eq(sessions.token, token), gt(sessions.expiresAt, new Date()))
-    )
-    .limit(1);
+    const [session] = await db
+      .select({
+        id: sessions.id,
+        userId: sessions.userId,
+        expiresAt: sessions.expiresAt,
+        user: {
+          id: users.id,
+          email: users.email,
+          username: users.username,
+          displayName: users.displayName,
+          avatarUrl: users.avatarUrl,
+          bio: users.bio,
+          role: users.role,
+          reputation: users.reputation,
+          createdAt: users.createdAt,
+        },
+      })
+      .from(sessions)
+      .innerJoin(users, eq(sessions.userId, users.id))
+      .where(
+        and(eq(sessions.token, token), gt(sessions.expiresAt, new Date()))
+      )
+      .limit(1);
 
-  if (!session) return null;
+    if (!session) return null;
 
-  // Extend session
-  const newExpiresAt = new Date(Date.now() + SESSION_MAX_AGE * 1000);
-  await db
-    .update(sessions)
-    .set({ expiresAt: newExpiresAt })
-    .where(eq(sessions.id, session.id));
+    // Extend session
+    const newExpiresAt = new Date(Date.now() + SESSION_MAX_AGE * 1000);
+    await db
+      .update(sessions)
+      .set({ expiresAt: newExpiresAt })
+      .where(eq(sessions.id, session.id));
 
-  store.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    expires: newExpiresAt,
-    path: "/",
-  });
+    store.set(SESSION_COOKIE, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      expires: newExpiresAt,
+      path: "/",
+    });
 
-  return session;
+    return session;
+  } catch (error) {
+    // Log error but return null instead of throwing
+    console.error("Session retrieval error:", error);
+    return null;
+  }
 }
 
 export async function destroySession() {
