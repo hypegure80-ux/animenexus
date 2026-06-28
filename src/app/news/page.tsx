@@ -16,7 +16,8 @@ export default async function NewsPage() {
   const { data: allNews, error } = await supabase
     .from("news")
     .select("*")
-    .order("created_at", { ascending: false })
+    .eq("status", "published")
+    .order("publishedAt", { ascending: false })
     .limit(20);
 
   if (error) {
@@ -27,8 +28,6 @@ export default async function NewsPage() {
     return <EmptyState message="No hay noticias disponibles por el momento." />;
   }
 
-  const categories = ["All", ...new Set(allNews.map((n) => n.category).filter(Boolean))];
-
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
       <h1 className="text-3xl font-bold text-white mb-2">News</h1>
@@ -38,21 +37,21 @@ export default async function NewsPage() {
         {allNews.map((n) => (
           <Link key={n.id} href={`/news/${n.id}`} className="group">
             <Card className="h-full bg-gray-900/60 hover:bg-gray-900/80 transition-all duration-300 hover:border-pink-500/20 overflow-hidden">
-              {n.cover_image && (
+              {n.coverImage && (
                 <div className="h-32 relative bg-gray-800">
-                  <img src={n.cover_image} alt={n.title} className="w-full h-full object-cover" />
+                  <img src={n.coverImage} alt={n.title} className="w-full h-full object-cover" />
                 </div>
               )}
-              {!n.cover_image && (
+              {!n.coverImage && (
                 <div className="h-32 bg-gradient-to-br from-pink-900 to-purple-900 flex items-center justify-center" />
               )}
-              <Badge className="absolute top-3 left-3">{n.category}</Badge>
+              <Badge className="absolute top-3 left-3">News</Badge>
               <CardContent className="pt-4">
                 <h3 className="font-semibold text-white group-hover:text-pink-400 transition-colors line-clamp-2">{n.title}</h3>
                 <p className="text-sm text-gray-400 mt-2 line-clamp-2">{n.excerpt}</p>
                 <div className="flex items-center gap-2 mt-3 text-xs text-gray-500">
                   <Clock className="h-3 w-3" />
-                  {formatRelativeTime(n.created_at)}
+                  {formatRelativeTime(n.publishedAt)}
                 </div>
               </CardContent>
             </Card>

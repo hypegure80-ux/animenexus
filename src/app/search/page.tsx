@@ -88,7 +88,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {results.map((anime) => (
-          <Link key={anime.mal_id} href={`/anime/${anime.mal_id}`}>
+          <Link key={anime.mal_id} href={`/anime/${String(anime.mal_id)}`}>
             <Card className="bg-gray-900/60 hover:bg-gray-900/80 transition-all duration-300 hover:border-pink-500/20 overflow-hidden">
               <div className="h-36 relative">
                 <Image
