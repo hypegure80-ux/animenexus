@@ -62,3 +62,26 @@ export function parseSearchParams<T extends z.ZodType>(
   });
   return schema.parse(params);
 }
+
+export function buildQueryString(params: Record<string, string | number | undefined>): string {
+  const filtered = Object.entries(params)
+    .filter(([, v]) => v !== undefined && v !== "")
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`);
+  return filtered.length ? `?${filtered.join("&")}` : "";
+}
+
+export async function fetchWithTimeout<T>(
+  url: string,
+  options: RequestInit = {},
+  timeoutMs = 8000
+): Promise<T> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(url, { ...options, signal: controller.signal });
+    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+    return response.json() as Promise<T>;
+  } finally {
+    clearTimeout(id);
+  }
+}
