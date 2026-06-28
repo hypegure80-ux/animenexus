@@ -46,8 +46,6 @@ export default async function AnimePage({ searchParams }: PageProps) {
       <div className="flex flex-wrap gap-3 mb-8">
         <Link href="/anime/seasonal"><Button variant="outline" size="sm"><Calendar className="h-4 w-4" /> Seasonal</Button></Link>
         <Link href="/anime/rankings"><Button variant="outline" size="sm"><TrendingUp className="h-4 w-4" /> Rankings</Button></Link>
-        <Link href="/anime/studios"><Button variant="outline" size="sm"><Film className="h-4 w-4" /> Studios</Button></Link>
-        <Link href="/anime/search"><Button variant="secondary" size="sm"><Search className="h-4 w-4" /> Advanced Search</Button></Link>
       </div>
 
       {/* Tabs */}

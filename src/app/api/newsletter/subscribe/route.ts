@@ -18,7 +18,6 @@ export async function POST(request: Request) {
 
     // TODO: In production, save to database or send to email service
     // For now, simulate successful subscription
-    console.log(`Newsletter subscription: ${email}`);
 
     return apiSuccess({
       message: "Successfully subscribed to newsletter",
