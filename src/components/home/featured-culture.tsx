@@ -39,67 +39,23 @@ const defaultTopics = [
 ];
 
 export default async function FeaturedCulture() {
-  const { data: categories, error } = await supabase
+  const { data: categories } = await supabase
     .from("categories")
     .select("*")
     .limit(8);
 
-  if (error || !categories || categories.length === 0) {
-    // Usar datos por defecto si no hay categorías en la base de datos
-    const culturalTopics = defaultTopics;
-    return (
-      <section className="py-16 md:py-24">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="flex items-center justify-between mb-10">
-            <div>
-              <h2 className="text-3xl font-bold text-white mb-2">
-                Explore Asian Culture
-              </h2>
-              <p className="text-gray-400">
-                Dive deep into the traditions, arts, and lifestyle of Asia
-              </p>
-            </div>
-            <Link
-              href="/culture"
-              className="hidden sm:flex items-center gap-1 text-sm text-pink-400 hover:text-pink-300 transition-colors"
-            >
-              View All <span aria-hidden="true">→</span>
-            </Link>
-          </div>
+  // Usar datos de la DB si existen, sino usar defaultTopics
+  const culturalTopics = categories && categories.length > 0
+    ? categories.map((cat: Category) => ({
+        name: cat.name,
+        description: cat.description || "",
+        icon: cat.icon || "BookOpen",
+        slug: cat.slug,
+        color: cat.color || "text-pink-400",
+        gradient: "from-pink-500/20 to-purple-500/20",
+      }))
+    : defaultTopics;
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {culturalTopics.map((topic) => {
-              const IconComponent = iconMap[topic.icon] || BookOpen;
-              return (
-                <Link key={topic.slug} href={`/culture/${topic.slug}`} className="group">
-                  <Card className="h-full bg-gray-900/40 hover:bg-gray-900/60 transition-all duration-300 hover:border-pink-500/30 hover:shadow-lg hover:shadow-pink-500/5 cursor-pointer">
-                    <CardHeader>
-                      <div
-                        className={`w-12 h-12 rounded-xl bg-gradient-to-br ${topic.gradient} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}
-                      >
-                        <IconComponent className={`h-6 w-6 ${topic.color}`} />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <CardTitle className="text-base">{topic.name}</CardTitle>
-                        <Badge variant="secondary" className="text-[10px]">
-                          Asia
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-gray-400 leading-relaxed">
-                        {topic.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-    );
-  }
   return (
     <section className="py-16 md:py-24">
       <div className="mx-auto max-w-7xl px-4">
@@ -121,30 +77,33 @@ export default async function FeaturedCulture() {
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {culturalTopics.map((topic) => (
-            <Link key={topic.href} href={topic.href} className="group">
-              <Card className="h-full bg-gray-900/40 hover:bg-gray-900/60 transition-all duration-300 hover:border-pink-500/30 hover:shadow-lg hover:shadow-pink-500/5 cursor-pointer">
-                <CardHeader>
-                  <div
-                    className={`w-12 h-12 rounded-xl bg-gradient-to-br ${topic.gradient} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}
-                  >
-                    <topic.icon className={`h-6 w-6 ${topic.iconColor}`} />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CardTitle className="text-base">{topic.title}</CardTitle>
-                    <Badge variant="secondary" className="text-[10px]">
-                      {topic.country}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-400 leading-relaxed">
-                    {topic.description}
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+          {culturalTopics.map((topic) => {
+            const IconComponent = iconMap[topic.icon] || BookOpen;
+            return (
+              <Link key={topic.slug} href={`/culture/${topic.slug}`} className="group">
+                <Card className="h-full bg-gray-900/40 hover:bg-gray-900/60 transition-all duration-300 hover:border-pink-500/30 hover:shadow-lg hover:shadow-pink-500/5 cursor-pointer">
+                  <CardHeader>
+                    <div
+                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${topic.gradient} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}
+                    >
+                      <IconComponent className={`h-6 w-6 ${topic.color}`} />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-base">{topic.name}</CardTitle>
+                      <Badge variant="secondary" className="text-[10px]">
+                        Asia
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-400 leading-relaxed">
+                      {topic.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

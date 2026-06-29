@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { SearchParams } from "next/dist/lib/search-utils";
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
@@ -84,7 +83,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
         <Button type="submit" size="lg"><Search className="h-5 w-5 mr-1" /> Search</Button>
       </form>
 
-      <p className="text-gray-400 mb-4">{results.length} resultados para "{query}"</p>
+      <p className="text-gray-400 mb-4">{results.length} resultados para &quot;{query}&quot;</p>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {results.map((anime) => (
