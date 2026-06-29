@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
+import { db } from "@/db";
+import { sessions, users } from "@/db/schema";
+import { eq, and, gt } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
 const PROTECTED_ROUTES = ["/favorites", "/admin"];
 const ADMIN_ROUTES = ["/admin"];
 const AUTH_ROUTES = ["/login", "/register"];
-const SESSION_COOKIE = "sakura_session";
+const SESSION_COOKIE = process.env.SESSION_COOKIE_NAME ?? "sakura_session";
 
 async function getSessionFromCookies(request: NextRequest): Promise<{
   userId: string;
@@ -15,11 +19,30 @@ async function getSessionFromCookies(request: NextRequest): Promise<{
 
   try {
     // El token es un nanoid guardado en la tabla sessions
-    // Para verificar el rol, necesitamos hacer una query a la DB
-    // Pero en middleware no podemos acceder a DB directamente en Edge Runtime
-    // Por ahora, retornamos null y confiamos en el cliente
-    // Una solución mejor sería store el role en un JWT o cookie separada
-    return null;
+    // Validar el token contra la base de datos
+    const [session] = await db
+      .select({
+        id: sessions.id,
+        userId: sessions.userId,
+        expiresAt: sessions.expiresAt,
+        role: users.role,
+      })
+      .from(sessions)
+      .innerJoin(users, eq(sessions.userId, users.id))
+      .where(
+        and(
+          eq(sessions.token, sessionCookie.value),
+          gt(sessions.expiresAt, new Date())
+        )
+      )
+      .limit(1);
+
+    if (!session) return null;
+
+    return {
+      userId: session.userId,
+      role: session.role as "user" | "admin",
+    };
   } catch {
     return null;
   }
