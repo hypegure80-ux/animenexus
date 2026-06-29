@@ -124,7 +124,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 text-center">
         <h1 className="text-2xl font-bold text-white mb-4">Article Not Found</h1>
-        <p className="text-gray-400 mb-8">The article you're looking for doesn't exist or has been removed.</p>
+        <p className="text-gray-400 mb-8">The article you&apos;re looking for doesn&apos;t exist or has been removed.</p>
         <Link href="/news">
           <Button variant="outline">
             <ArrowLeft className="h-4 w-4 mr-2" /> Back to News

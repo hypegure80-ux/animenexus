@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ErrorMessage, EmptyState } from "@/components/ui/error-message";
@@ -39,7 +40,7 @@ export default async function NewsPage() {
             <Card className="h-full bg-gray-900/60 hover:bg-gray-900/80 transition-all duration-300 hover:border-pink-500/20 overflow-hidden">
               {n.coverImage && (
                 <div className="h-32 relative bg-gray-800">
-                  <img src={n.coverImage} alt={n.title} className="w-full h-full object-cover" />
+                  <Image src={n.coverImage} alt={n.title} fill className="object-cover" />
                 </div>
               )}
               {!n.coverImage && (

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { SearchParams } from "next/dist/lib/search-utils";
 import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";

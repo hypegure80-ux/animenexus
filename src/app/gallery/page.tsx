@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ErrorMessage, EmptyState } from "@/components/ui/error-message";
@@ -61,7 +62,7 @@ export default async function GalleryPage() {
           <Card key={item.id} className="bg-gray-900/60 hover:bg-gray-900/80 transition-all duration-300 hover:border-pink-500/20 overflow-hidden">
             <div className="h-48 bg-gradient-to-br from-pink-900 to-purple-900 flex items-center justify-center relative">
               {item.image_url ? (
-                <img src={item.image_url} alt={item.title} className="w-full h-full object-cover" />
+                <Image src={item.image_url} alt={item.title} fill className="object-cover" />
               ) : (
                 <ImageIcon className="h-10 w-10 text-white/40" />
               )}
