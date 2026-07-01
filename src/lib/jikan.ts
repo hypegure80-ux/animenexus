@@ -106,15 +106,12 @@ export type Season = "winter" | "spring" | "summer" | "fall";
 
 const BASE_URL = "https://api.jikan.moe/v4";
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 /**
  * Obtiene los anime más populares
  * @param page - Número de página (default: 1)
  */
 export async function getTopAnime(page: number = 1): Promise<JikanTopAnime[] | null> {
   try {
-    await delay(350);
     const res = await fetch(`${BASE_URL}/top/anime?page=${page}&limit=20`, {
       next: { revalidate: 3600 },
     });
@@ -133,7 +130,6 @@ export async function getTopAnime(page: number = 1): Promise<JikanTopAnime[] | n
  */
 export async function getAnimeById(id: string | number): Promise<JikanResponse<JikanAnime> | null> {
   try {
-    await delay(350);
     const res = await fetch(`${BASE_URL}/anime/${id}`, {
       next: { revalidate: 3600 },
     });
@@ -156,7 +152,6 @@ export async function getSeasonalAnime(
   season: Season
 ): Promise<JikanTopAnime[] | null> {
   try {
-    await delay(350);
     const res = await fetch(`${BASE_URL}/seasons/${year}/${season}`, {
       next: { revalidate: 3600 },
     });
@@ -175,7 +170,6 @@ export async function getSeasonalAnime(
  */
 export async function searchAnime(query: string): Promise<JikanTopAnime[] | null> {
   try {
-    await delay(350);
     const res = await fetch(`${BASE_URL}/anime?q=${encodeURIComponent(query)}&limit=20`, {
       next: { revalidate: 3600 },
     });
@@ -194,7 +188,6 @@ export async function searchAnime(query: string): Promise<JikanTopAnime[] | null
  */
 export async function getAnimeNews(id: string | number): Promise<JikanNews[] | null> {
   try {
-    await delay(350);
     const res = await fetch(`${BASE_URL}/anime/${id}/news`, {
       next: { revalidate: 3600 },
     });

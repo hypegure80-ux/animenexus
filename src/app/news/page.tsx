@@ -16,11 +16,10 @@ export const metadata: Metadata = {
 export default async function NewsPage() {
   const { data: allNews, error } = await supabase
     .from("news")
-    .select("*")
-    .eq("status", "published")
-    .order("publishedAt", { ascending: false })
+    .select("id, title, excerpt, cover_image, published_at") // Seleccionar solo las columnas necesarias
+    .eq("status", "published") // Filtrar por estado publicado
+    .order("published_at", { ascending: false }) // Ordenar por fecha de publicación
     .limit(20);
-
   if (error) {
     return <ErrorMessage message="Error al cargar las noticias." />;
   }
@@ -36,14 +35,14 @@ export default async function NewsPage() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {allNews.map((n) => (
-          <Link key={n.id} href={`/news/${n.id}`} className="group">
+          <Link key={n.id} href={`/news/${n.id}`} className="group"> 
             <Card className="h-full bg-gray-900/60 hover:bg-gray-900/80 transition-all duration-300 hover:border-pink-500/20 overflow-hidden">
-              {n.coverImage && (
+              {n.cover_image && (
                 <div className="h-32 relative bg-gray-800">
-                  <Image src={n.coverImage} alt={n.title} fill className="object-cover" />
+                  <Image src={n.cover_image} alt={n.title} fill className="object-cover" />
                 </div>
               )}
-              {!n.coverImage && (
+              {!n.cover_image && (
                 <div className="h-32 bg-gradient-to-br from-pink-900 to-purple-900 flex items-center justify-center" />
               )}
               <Badge className="absolute top-3 left-3">News</Badge>
@@ -51,8 +50,8 @@ export default async function NewsPage() {
                 <h3 className="font-semibold text-white group-hover:text-pink-400 transition-colors line-clamp-2">{n.title}</h3>
                 <p className="text-sm text-gray-400 mt-2 line-clamp-2">{n.excerpt}</p>
                 <div className="flex items-center gap-2 mt-3 text-xs text-gray-500">
-                  <Clock className="h-3 w-3" />
-                  {formatRelativeTime(n.publishedAt)}
+                  <Clock className="h-3 w-3" /> 
+                  {formatRelativeTime(n.published_at)}
                 </div>
               </CardContent>
             </Card>

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default async function GalleryPage() {
   const { data: items, error } = await supabase
     .from("gallery")
-    .select("*")
+    .select("id, title, image_url, category, like_count, view_count") // Seleccionar solo las columnas necesarias
     .order("created_at", { ascending: false })
     .limit(50);
 
@@ -41,7 +41,7 @@ export default async function GalleryPage() {
             <p className="text-gray-400">Cultural photography, landscapes, and community artwork</p>
           </div>
         </div>
-        <EmptyState message="La galería está en construcción" />
+        <ErrorMessage message="Error al cargar la galería." />
       </div>
     );
   }
@@ -60,7 +60,7 @@ export default async function GalleryPage() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {items.map((item) => (
           <Card key={item.id} className="bg-gray-900/60 hover:bg-gray-900/80 transition-all duration-300 hover:border-pink-500/20 overflow-hidden">
-            <div className="h-48 bg-gradient-to-br from-pink-900 to-purple-900 flex items-center justify-center relative">
+            <div className="h-48 bg-linear-to-br from-pink-900 to-purple-900 flex items-center justify-center relative">
               {item.image_url ? (
                 <Image src={item.image_url} alt={item.title} fill className="object-cover" />
               ) : (

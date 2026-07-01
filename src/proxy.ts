@@ -38,17 +38,17 @@ async function getSessionFromCookies(request: NextRequest): Promise<{
       .limit(1);
 
     if (!session) return null;
-
     return {
       userId: session.userId,
       role: session.role as "user" | "admin",
     };
-  } catch {
+  } catch (error) {
+    console.error("Error fetching session from database:", error);
     return null;
   }
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const session = await getSessionFromCookies(request);
 
